@@ -131,11 +131,11 @@ function EnhancedApp() {
       title: 'Nossa Primeira Música ✨',
       content: 'Vega, a estrela mais brilhante da Lira celestial, estava tocando nossa música quando nos conhecemos. Cada nota dessa estrela azul-branca ecoa o ritmo do meu coração quando penso em você.',
       emoji: '🎵',
-      astronomicalInfo: 'Vega é uma estrela da classe A0V, localizada a 25 anos-luz de distância na constelação da Lira.'
+      astronomicalInfo: 'Vega é uma estrela da classe A0V, localizada a 25 (nosso número) anos-luz de distância na constelação da Lira.'
     },
     'Sirius': {
       title: 'A Estrela Mais Brilhante 💫',
-      content: 'Sirius, a estrela mais brilhante do céu noturno, testemunhou nosso primeiro beijo. Nem mesmo seu brilho intenso consegue superar a luz que você trouxe para minha vida.',
+      content: 'Sirius, a estrela mais brilhante do céu noturno, testemunhou nossa união. Nem mesmo seu brilho intenso consegue superar a luz que você trouxe para minha vida.',
       emoji: '💋',
       astronomicalInfo: 'Sirius é um sistema binário a 8.6 anos-luz, sendo a estrela mais brilhante vista da Terra.'
     },
@@ -231,7 +231,7 @@ function EnhancedApp() {
     },
     'Fomalhaut': {
       title: 'Solitária do Sul 🐟',
-      content: 'Fomalhaut, a "boca do peixe austral", brilha sozinha em uma região escura do céu. Como eu antes de te conhecer, mas solitário.',
+      content: 'Fomalhaut, a "boca do peixe austral", está sozinha em uma região escura do céu. Como eu antes de te conhecer, mas solitário.',
       emoji: '🐠',
       astronomicalInfo: 'Fomalhaut é uma estrela jovem do tipo A rodeada por um disco de detritos onde planetas podem estar se formando.'
     },
@@ -256,7 +256,7 @@ function EnhancedApp() {
     },
     'Saturn': {
       title: 'Senhor dos Anéis 💍',
-      content: 'Saturno e seus magníficos anéis me lembram do anel que quero colocar em seu dedo. Um símbolo eterno de compromisso que gira ao redor do amor.',
+      content: 'Saturno e seus magníficos anéis me lembram a nossa união eterna e o compromisso, circular do anel, sem começo nem fim, representa a eternidade do amor e a continuidade do relacionamento. Um símbolo eterno de compromisso que gira ao redor do amor.',
       emoji: '💍',
       astronomicalInfo: 'Os anéis de Saturno são compostos principalmente de gelo de água e têm apenas alguns metros de espessura.'
     },
