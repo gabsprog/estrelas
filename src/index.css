@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900;
+    @apply text-white min-h-screen;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .star-button {
+    @apply px-6 py-3 rounded-full font-medium transition-all duration-300;
+    @apply bg-gradient-to-r from-yellow-400 to-orange-500;
+    @apply hover:from-yellow-300 hover:to-orange-400;
+    @apply shadow-lg hover:shadow-2xl;
+    @apply transform hover:scale-105;
+    color: #1a1a2e;
+  }
+  
+  .constellation-card {
+    @apply glass-effect rounded-2xl p-6 m-4;
+    @apply transform transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-2xl;
+    @apply cursor-pointer;
+  }
+  
+  .message-modal {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+    @apply backdrop-blur-sm;
+  }
+  
+  .message-content {
+    @apply glass-effect rounded-3xl p-8 max-w-md mx-4;
+    @apply transform transition-all duration-300;
+    @apply animate-float;
+  }
+  
+  .floating-star {
+    position: absolute;
+    color: #FFD700;
+    animation: float 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  .floating-star:nth-child(odd) {
+    animation-delay: 1s;
+  }
+  
+  .floating-star:nth-child(even) {
+    animation-delay: 2s;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .star-glow {
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+  }
+  
+  .moon-glow {
+    filter: drop-shadow(0 0 20px rgba(232, 234, 246, 0.8));
+  }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+}
+
+/* Animações adicionais */
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+}
+
+.sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes constellation-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.constellation-pulse {
+  animation: constellation-pulse 3s ease-in-out infinite;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .constellation-card {
+    @apply m-2 p-4;
+  }
+  
+  .message-content {
+    @apply p-6 max-w-sm;
+  }
+}
+
+/* Efeitos de partículas */
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #FFD700;
+  border-radius: 50%;
+  animation: particle-float 8s linear infinite;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px);
+    opacity: 0;
+  }
+}

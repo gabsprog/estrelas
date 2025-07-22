@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/star-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nosso Céu ✨ - 1 Ano Juntos</title>
+    
+    <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Meta tags para redes sociais -->
+    <meta property="og:title" content="Nosso Céu ✨ - 1 Ano Juntos" />
+    <meta property="og:description" content="Um mapa estelar interativo para celebrar nosso amor" />
+    <meta property="og:type" content="website" />
+    
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        color: white;
+        min-height: 100vh;
+      }
+      
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+      }
+      
+      .loading-screen.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      .loading-content {
+        text-align: center;
+        color: white;
+      }
+      
+      .loading-stars {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        animation: twinkle 1.5s ease-in-out infinite alternate;
+      }
+      
+      @keyframes twinkle {
+        0% { opacity: 0.3; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1.2); }
+      }
+      
+      .cursor-pointer {
+        cursor: pointer;
+      }
+      
+      .select-none {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-Ww4l-9By.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-DsceW-4w.js">
+    <link rel="modulepreload" crossorigin href="/assets/three-C0Oi5tdp.js">
+    <link rel="modulepreload" crossorigin href="/assets/motion-xQa0qsKv.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-BSv6HN4n.css">
+  </head>
+  <body>
+    <div id="loading" class="loading-screen">
+      <div class="loading-content">
+        <div class="loading-stars">✨ ⭐ ✨</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.5rem;">
+          Carregando nosso céu...
+        </h2>
+        <p style="opacity: 0.8;">Preparando as estrelas para você</p>
+      </div>
+    </div>
+    
+    <div id="root"></div>
+  </body>
+</html>
