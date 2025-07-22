@@ -8,17 +8,111 @@ import ParticleBackground from './components/ParticleBackground'
 import SoundController from './components/SoundController'
 import DayNightController from './components/DayNightController'
 import enhancedAstronomyService from './services/enhancedAstronomyService'
-import { Heart, Star, Moon, Sparkles, MapPin, Clock, Search } from 'lucide-react'
+import { Heart, Star, Moon, Sparkles, MapPin, Clock, Search, Smartphone } from 'lucide-react'
+
+// Função para detectar dispositivos móveis
+const getDeviceInfo = () => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent)
+  const isTablet = /ipad|tablet/.test(userAgent) || (isMobile && window.screen.width > 768)
+  const isLowPowerDevice = navigator.hardwareConcurrency <= 4 || navigator.deviceMemory <= 4
+  
+  return {
+    isMobile: isMobile && !isTablet,
+    isTablet,
+    isDesktop: !isMobile && !isTablet,
+    isLowPowerDevice,
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+    pixelRatio: window.devicePixelRatio || 1
+  }
+}
+
+// Configurações otimizadas para diferentes dispositivos
+const getOptimizedSettings = (deviceInfo) => {
+  if (deviceInfo.isMobile) {
+    return {
+      maxStars: 200,
+      maxParticles: 50,
+      renderQuality: 'low',
+      enableAdvancedEffects: false,
+      autoRotateSpeed: 0.1,
+      interactionRadius: 0.8, // Aumentar área de toque
+      textScale: 1.2,
+      buttonScale: 1.3
+    }
+  } else if (deviceInfo.isTablet) {
+    return {
+      maxStars: 500,
+      maxParticles: 100,
+      renderQuality: 'medium',
+      enableAdvancedEffects: true,
+      autoRotateSpeed: 0.2,
+      interactionRadius: 0.6,
+      textScale: 1.1,
+      buttonScale: 1.1
+    }
+  } else {
+    return {
+      maxStars: 1500,
+      maxParticles: 200,
+      renderQuality: 'high',
+      enableAdvancedEffects: true,
+      autoRotateSpeed: 0.2,
+      interactionRadius: 0.4,
+      textScale: 1.0,
+      buttonScale: 1.0
+    }
+  }
+}
+
+// Função otimizada para obter dados padrão rápidos
+const getDefaultStars = () => [
+  { hip: 91262, name: 'Vega', position: [8, 6, -12], mag: 0.03, color: '#A4C2F4', size: 2.5, constellation: 'Lyra' },
+  { hip: 32349, name: 'Sirius', position: [-6, -2, -15], mag: -1.46, color: '#A4C2F4', size: 3.0, constellation: 'Canis Major' },
+  { hip: 9884, name: 'Polaris', position: [2, 12, -8], mag: 1.98, color: '#F8F7FF', size: 2.0, constellation: 'Ursa Minor' },
+  { hip: 27989, name: 'Betelgeuse', position: [-3, 2, -18], mag: 0.42, color: '#FF6B6B', size: 2.8, constellation: 'Orion' },
+  { hip: 17702, name: 'Rigel', position: [-5, -3, -16], mag: 0.13, color: '#87CEEB', size: 2.9, constellation: 'Orion' },
+  { hip: 15863, name: 'Aldebaran', position: [-8, 1, -14], mag: 0.85, color: '#FFA500', size: 2.6, constellation: 'Taurus' },
+  { hip: 24436, name: 'Capella', position: [1, 8, -16], mag: 0.08, color: '#FFF4EA', size: 2.9, constellation: 'Auriga' },
+  { hip: 69673, name: 'Arcturus', position: [7, 4, -13], mag: -0.05, color: '#FFCC6F', size: 2.9, constellation: 'Boötes' },
+  { hip: 65474, name: 'Spica', position: [4, -1, -17], mag: 0.97, color: '#87CEEB', size: 2.7, constellation: 'Virgo' },
+  { hip: 80763, name: 'Antares', position: [6, -4, -12], mag: 1.09, color: '#FF4500', size: 2.7, constellation: 'Scorpius' },
+  { hip: 97649, name: 'Altair', position: [9, 3, -11], mag: 0.77, color: '#FFFFFF', size: 2.6, constellation: 'Aquila' },
+  { hip: 102098, name: 'Deneb', position: [12, 8, -10], mag: 1.25, color: '#FFFFFF', size: 2.4, constellation: 'Cygnus' },
+  { hip: 37279, name: 'Pollux', position: [-2, 4, -15], mag: 1.14, color: '#FFCC6F', size: 2.4, constellation: 'Gemini' },
+  { hip: 36850, name: 'Castor', position: [-1, 5, -14], mag: 1.57, color: '#FFFFFF', size: 2.2, constellation: 'Gemini' },
+  { hip: 49669, name: 'Regulus', position: [2, 1, -19], mag: 1.35, color: '#87CEEB', size: 2.3, constellation: 'Leo' },
+  { hip: 34444, name: 'Procyon', position: [-4, 1, -17], mag: 0.34, color: '#F8F7FF', size: 2.8, constellation: 'Canis Minor' },
+  { hip: 30438, name: 'Canopus', position: [5, -8, -12], mag: -0.74, color: '#F8F7FF', size: 3.0, constellation: 'Carina' },
+  { hip: 113963, name: 'Fomalhaut', position: [8, -6, -13], mag: 1.16, color: '#FFFFFF', size: 2.4, constellation: 'Piscis Austrinus' }
+]
+
+const getDefaultPlanets = () => [
+  { name: 'Venus', position: [5, 2, -8], color: '#FFC649', magnitude: -4.0, visible: true, type: 'planet' },
+  { name: 'Mars', position: [-7, 1, -6], color: '#CD5C5C', magnitude: 0.7, visible: true, type: 'planet' },
+  { name: 'Jupiter', position: [3, 4, -12], color: '#D8CA9D', magnitude: -2.2, visible: true, type: 'planet' },
+  { name: 'Saturn', position: [-4, 3, -10], color: '#FAD5A5', magnitude: 0.4, visible: true, type: 'planet' }
+]
+
+const getDefaultMoon = () => ({
+  position: [6, 5, -9],
+  phase: 0.7,
+  phaseName: 'Gibosa Crescente',
+  visible: true,
+  age: 10
+})
 
 function EnhancedApp() {
   const [currentScreen, setCurrentScreen] = useState('welcome')
   const [selectedMessage, setSelectedMessage] = useState(null)
   const [showFinalSurprise, setShowFinalSurprise] = useState(false)
   const [discoveredMessages, setDiscoveredMessages] = useState([])
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const [dayNightMode, setDayNightMode] = useState('night')
   const [userLocation, setUserLocation] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [deviceInfo, setDeviceInfo] = useState(getDeviceInfo())
+  const [optimizedSettings, setOptimizedSettings] = useState(null)
   const [skyData, setSkyData] = useState({
     stars: [],
     planets: [],
@@ -172,91 +266,49 @@ function EnhancedApp() {
       content: 'Nossa Lua, com suas fases que mudam mas sempre retornam, representa a constância do nosso amor através de todas as mudanças da vida.',
       emoji: '🌙',
       astronomicalInfo: 'A Lua está se afastando da Terra cerca de 3.8 cm por ano, mas nosso amor só se aproxima mais a cada dia.'
-    },
-
-    'M1 - Nebulosa do Caranguejo': {
-      title: 'Remanescente de Supernova 💥',
-      content: 'M1, resultado da explosão de uma estrela em 1054 d.C., mostra que até as explosões mais violentas podem criar beleza. Como nosso amor nasceu do caos das vidas separadas.',
-      emoji: '💥',
-      astronomicalInfo: 'M1 contém um pulsar que gira 30 vezes por segundo, resultado da explosão de uma supernova.'
-    },
-    'M8 - Nebulosa da Lagoa': {
-      title: 'Lagoa Estelar 🌊',
-      content: 'M8, uma lagoa cósmica onde novas estrelas nascem, é como nosso relacionamento, um berçário de sonhos e possibilidades infinitas.',
-      emoji: '🌊',
-      astronomicalInfo: 'M8 é uma nebulosa de emissão visível a olho nu na constelação de Sagitário.'
-    },
-    'M16 - Nebulosa da Águia': {
-      title: 'Pilares da Criação 🏛️',
-      content: 'M16 contém os famosos Pilares da Criação. Como esses pilares cósmicos, construímos dia a dia os pilares do nosso amor eterno.',
-      emoji: '🏗️',
-      astronomicalInfo: 'Os Pilares da Criação são colunas de gás e poeira onde novas estrelas estão nascendo.'
-    },
-    'M17 - Nebulosa Ômega': {
-      title: 'Cisne Cósmico 🦢',
-      content: 'M17, também chamada de Nebulosa do Cisne, voa graciosamente pelo espaço. Nosso amor tem a mesma elegância e graça eternas.',
-      emoji: '🦢',
-      astronomicalInfo: 'M17 é uma das nebulosas de emissão mais massivas e luminosas conhecidas.'
-    },
-    'M20 - Nebulosa Trífida': {
-      title: 'Três Cores do Amor 🎨',
-      content: 'M20 brilha em três cores distintas - vermelho, azul e rosa. Como nosso amor que tem todas as cores e sentimentos do universo.',
-      emoji: '🎨',
-      astronomicalInfo: 'M20 combina uma nebulosa de emissão vermelha com uma nebulosa de reflexão azul.'
-    },
-    'M27 - Nebulosa Dumbell': {
-      title: 'Halter Cósmico 🏋️',
-      content: 'M27, com sua forma de halter, nos lembra que o amor também é exercício, fortalece a alma e expande o coração todos os dias.',
-      emoji: '💪',
-      astronomicalInfo: 'M27 foi a primeira nebulosa planetária descoberta, formada por uma estrela moribunda.'
-    },
-    'M42 - Nebulosa de Orion': {
-      title: 'Berçário Estelar 🍼',
-      content: 'M42, o berçário estelar mais famoso, é onde milhares de estrelas nascem. Como nosso amor deu origem a infinitos sonhos e possibilidades.',
-      emoji: '⭐',
-      astronomicalInfo: 'M42 é uma das nebulosas mais estudadas e fotografadas, visível a olho nu como a espada de Orion.'
-    },
-    'M43 - Nebulosa De Mairan': {
-      title: 'Companheira de Orion ✨',
-      content: 'M43, a pequena companheira de M42, nunca se separa de sua irmã maior. Como nós, sempre juntos, sempre conectados.',
-      emoji: '👫',
-      astronomicalInfo: 'M43 é separada da Nebulosa de Orion por uma faixa escura de poeira cósmica.'
-    },
-    'M57 - Nebulosa do Anel': {
-      title: 'Anel de Compromisso Cósmico 💍',
-      content: 'M57 forma um anel perfeito no espaço, como o anel que simboliza nosso compromisso eterno. Um círculo sem fim, como nosso amor.',
-      emoji: '💍',
-      astronomicalInfo: 'M57 é uma nebulosa planetária com uma anã branca central extremamente quente.'
-    },
-    'M78 - Nebulosa de Reflexão': {
-      title: 'Espelho Cósmico 🪞',
-      content: 'M78 reflete a luz das estrelas próximas, como você reflete toda a beleza e bondade que existe no universo. Um espelho da perfeição.',
-      emoji: '✨',
-      astronomicalInfo: 'M78 é uma nebulosa de reflexão azul iluminada por estrelas jovens e quentes.'
     }
   }
 
+  // Detectar mudanças no dispositivo
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
+      const newDeviceInfo = getDeviceInfo()
+      setDeviceInfo(newDeviceInfo)
+      setOptimizedSettings(getOptimizedSettings(newDeviceInfo))
+    }
+
+    const handleOrientationChange = () => {
+      setTimeout(handleResize, 100) // Delay para garantir que as dimensões sejam atualizadas
     }
 
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    window.addEventListener('orientationchange', handleOrientationChange)
 
+    // Configuração inicial
+    const initialSettings = getOptimizedSettings(deviceInfo)
+    setOptimizedSettings(initialSettings)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleOrientationChange)
+    }
+  }, [deviceInfo])
+
+  // Sistema de inicialização otimizado para mobile
   useEffect(() => {
-    const initializeAdvancedApp = async () => {
+    const initializeApp = async () => {
       setLoading(true)
       
       try {
         console.log('🌟 Iniciando sistema astronômico...')
+        console.log('📱 Dispositivo detectado:', deviceInfo.isMobile ? 'Mobile' : deviceInfo.isTablet ? 'Tablet' : 'Desktop')
         
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
         
         let location
-        if (isProduction) {
-          console.log('🚀 Modo produção (Netlify) - usando Itapipoca diretamente')
+        if (isProduction || deviceInfo.isMobile) {
+          // Em produção ou mobile, usar localização padrão para evitar prompts
+          console.log('🏠 Usando localização padrão (Itapipoca)')
           location = {
             latitude: -3.5133,
             longitude: -39.5781,
@@ -265,7 +317,7 @@ function EnhancedApp() {
             timezone: 'America/Fortaleza'
           }
         } else {
-          console.log('🏠 Modo desenvolvimento - tentando geolocalização')
+          console.log('🌍 Tentando geolocalização')
           try {
             const locationPromise = enhancedAstronomyService.getUserLocationPrecise()
             const timeoutPromise = new Promise((_, reject) => 
@@ -287,8 +339,9 @@ function EnhancedApp() {
         
         setUserLocation(location)
 
-        if (isProduction) {
-          console.log('🌅 Usando modo noturno fixo em produção')
+        // Sempre usar modo noturno em mobile/produção para melhor experiência
+        if (isProduction || deviceInfo.isMobile) {
+          console.log('🌙 Usando modo noturno fixo')
           setDayNightMode('night')
         } else {
           try {
@@ -296,39 +349,46 @@ function EnhancedApp() {
             setDayNightMode(mode === 'day' ? 'day' : 'night')
             console.log('🌅 Modo:', mode)
           } catch (error) {
-            console.log('🌅 Fallback modo noturno')
+            console.log('🌙 Fallback modo noturno')
             setDayNightMode('night')
           }
         }
 
-        console.log('⭐ Gerando céu...')
-        const skyPromise = enhancedAstronomyService.generateRealisticSky(SPECIAL_DATE, location)
-        const timeoutSky = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Sky timeout')), isProduction ? 5000 : 10000)
-        )
-
+        // Carregar dados do céu otimizados para o dispositivo
+        console.log('⭐ Gerando céu otimizado...')
         let skyData = { stars: [], planets: [], nebulae: [], moon: null }
         
-        try {
-          const stars = await Promise.race([skyPromise, timeoutSky])
-          skyData.stars = isProduction ? stars.slice(0, 300) : stars
-          console.log(`✅ ${skyData.stars.length} estrelas carregadas`)
-        } catch (error) {
-          console.log('⭐ Usando estrelas padrão mínimas')
-          skyData.stars = getDefaultStars()
-        }
-
-        if (isProduction) {
+        if (deviceInfo.isMobile || isProduction) {
+          // Para mobile, usar dados padrão mais rápidos
+          console.log('📱 Usando dados otimizados para mobile')
+          skyData.stars = getDefaultStars().slice(0, optimizedSettings?.maxStars || 200)
           skyData.planets = getDefaultPlanets()
           skyData.moon = getDefaultMoon()
           skyData.nebulae = []
-          console.log('🪐🌙 Usando dados padrão em produção')
         } else {
+          // Para desktop, tentar dados reais
           try {
-            skyData.planets = await enhancedAstronomyService.getRealPlanetData(SPECIAL_DATE, location)
-            skyData.moon = await enhancedAstronomyService.getPreciseMoonData(SPECIAL_DATE, location)
-            skyData.nebulae = await enhancedAstronomyService.getRealNebulaData(SPECIAL_DATE, location)
+            const skyPromise = enhancedAstronomyService.generateRealisticSky(SPECIAL_DATE, location)
+            const timeoutSky = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Sky timeout')), 8000)
+            )
+
+            const stars = await Promise.race([skyPromise, timeoutSky])
+            skyData.stars = stars.slice(0, optimizedSettings?.maxStars || 1500)
+            console.log(`✅ ${skyData.stars.length} estrelas carregadas`)
+            
+            try {
+              skyData.planets = await enhancedAstronomyService.getRealPlanetData(SPECIAL_DATE, location)
+              skyData.moon = await enhancedAstronomyService.getPreciseMoonData(SPECIAL_DATE, location)
+              skyData.nebulae = await enhancedAstronomyService.getRealNebulaData(SPECIAL_DATE, location)
+            } catch (error) {
+              skyData.planets = getDefaultPlanets()
+              skyData.moon = getDefaultMoon()
+              skyData.nebulae = []
+            }
           } catch (error) {
+            console.log('⭐ Usando estrelas padrão')
+            skyData.stars = getDefaultStars()
             skyData.planets = getDefaultPlanets()
             skyData.moon = getDefaultMoon()
             skyData.nebulae = []
@@ -341,6 +401,7 @@ function EnhancedApp() {
       } catch (error) {
         console.error('❌ Erro crítico:', error)
         
+        // Fallback completo para garantir que a app funcione
         setUserLocation({
           latitude: -3.5133,
           longitude: -39.5781,
@@ -355,12 +416,16 @@ function EnhancedApp() {
           moon: getDefaultMoon()
         })
       } finally {
-        setTimeout(() => setLoading(false), 1000)
+        // Tempo mínimo de loading para UX
+        const minLoadTime = deviceInfo.isMobile ? 1500 : 1000
+        setTimeout(() => setLoading(false), minLoadTime)
       }
     }
 
-    initializeAdvancedApp()
-  }, [])
+    if (optimizedSettings) {
+      initializeApp()
+    }
+  }, [optimizedSettings, deviceInfo])
 
   const handleStartExploring = () => {
     setCurrentScreen('starmap')
@@ -375,6 +440,11 @@ function EnhancedApp() {
       if (!discoveredMessages.includes(starName)) {
         setDiscoveredMessages(prev => [...prev, starName])
         console.log('🎉 Nova descoberta:', starName)
+        
+        // Feedback háptico para mobile
+        if (deviceInfo.isMobile && navigator.vibrate) {
+          navigator.vibrate([50, 50, 100])
+        }
         
         document.dispatchEvent(new CustomEvent('starDiscovered', { detail: starName }))
       }
@@ -416,46 +486,62 @@ function EnhancedApp() {
     moonPhase: skyData.moon?.phaseName || 'Carregando...'
   }
 
+  // Loading otimizado para mobile
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <ParticleBackground />
         
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center glass-effect rounded-3xl p-8 max-w-md"
+          className="text-center glass-effect rounded-3xl p-6 md:p-8 max-w-sm md:max-w-md mx-4"
         >
-          <div className="text-8xl mb-6 animate-pulse">🌌</div>
+          <div className="text-6xl md:text-8xl mb-4 md:mb-6 animate-pulse">🌌</div>
           
-          <h2 className="text-3xl font-serif mb-4 text-gradient">
+          <h2 className="text-xl md:text-3xl font-serif mb-3 md:mb-4 text-gradient">
             Carregando o Universo
           </h2>
           
-          <div className="space-y-3 text-sm text-gray-300">
+          <div className="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-300">
             <div className="flex items-center justify-center space-x-2">
-              <Search className="w-4 h-4 animate-spin" />
+              <Smartphone className="w-3 h-3 md:w-4 md:h-4 animate-pulse" />
+              <span>Otimizando para {deviceInfo.isMobile ? 'mobile' : deviceInfo.isTablet ? 'tablet' : 'desktop'}</span>
+            </div>
+            
+            <div className="flex items-center justify-center space-x-2">
+              <Search className="w-3 h-3 md:w-4 md:h-4 animate-spin" />
               <span>Calibrando telescópio virtual...</span>
             </div>
             
             <div className="flex items-center justify-center space-x-2">
-              <MapPin className="w-4 h-4 animate-bounce" />
+              <MapPin className="w-3 h-3 md:w-4 md:h-4 animate-bounce" />
               <span>Obtendo localização precisa...</span>
             </div>
             
             <div className="flex items-center justify-center space-x-2">
-              <Clock className="w-4 h-4 animate-pulse" />
+              <Clock className="w-3 h-3 md:w-4 md:h-4 animate-pulse" />
               <span>Calculando posições astronômicas...</span>
             </div>
             
             <div className="flex items-center justify-center space-x-2">
-              <Star className="w-4 h-4 animate-ping" />
-              <span>Carregando catálogo Hipparcos...</span>
+              <Star className="w-3 h-3 md:w-4 md:h-4 animate-ping" />
+              <span>Carregando {optimizedSettings?.maxStars || 200} estrelas...</span>
             </div>
           </div>
           
-          <div className="mt-6 text-xs text-gray-400">
-            Preparando uma experiência astronômica real para você
+          <div className="mt-4 md:mt-6 text-xs text-gray-400">
+            Preparando uma experiência astronômica otimizada para você
+          </div>
+          
+          {/* Barra de progresso visual */}
+          <div className="mt-4 w-full bg-gray-700 rounded-full h-2">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              className="bg-gradient-to-r from-pink-500 to-yellow-500 h-2 rounded-full"
+            />
           </div>
         </motion.div>
       </div>
@@ -466,9 +552,11 @@ function EnhancedApp() {
     <div className="min-h-screen relative overflow-hidden">
       <ParticleBackground />
       
-      <SoundController />
+      {/* Controle de som apenas em desktop para evitar problemas de autoplay mobile */}
+      {!deviceInfo.isMobile && <SoundController />}
       
-      {currentScreen === 'starmap' && !showFinalSurprise && (
+      {/* Controle dia/noite otimizado para mobile */}
+      {currentScreen === 'starmap' && !showFinalSurprise && !deviceInfo.isMobile && (
         <DayNightController
           specialDate={SPECIAL_DATE}
           onModeChange={handleModeChange}
@@ -477,28 +565,37 @@ function EnhancedApp() {
         />
       )}
       
+      {/* Status astronômico otimizado para mobile */}
       {currentScreen === 'starmap' && !showFinalSurprise && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="fixed top-4 right-4 glass-effect rounded-2xl p-4 z-30"
+          className={`fixed top-4 right-4 glass-effect rounded-2xl p-3 md:p-4 z-30 ${
+            deviceInfo.isMobile ? 'text-xs max-w-48' : 'max-w-64'
+          }`}
         >
-          <div className="text-center mb-3">
-            <h3 className="text-lg font-serif font-bold text-gradient">
+          <div className="text-center mb-2 md:mb-3">
+            <h3 className={`font-serif font-bold text-gradient ${
+              deviceInfo.isMobile ? 'text-sm' : 'text-lg'
+            }`}>
               Status Astronômico
             </h3>
           </div>
           
-          <div className="space-y-2 text-xs">
-            <div className="grid grid-cols-2 gap-4">
+          <div className={`space-y-2 ${deviceInfo.isMobile ? 'text-xs' : 'text-xs'}`}>
+            <div className={`grid gap-2 md:gap-4 ${deviceInfo.isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
               <div className="text-center">
-                <div className="text-yellow-400 font-bold text-lg">{stats.totalStars}</div>
+                <div className={`text-yellow-400 font-bold ${deviceInfo.isMobile ? 'text-sm' : 'text-lg'}`}>
+                  {stats.totalStars}
+                </div>
                 <div className="text-gray-400">Estrelas</div>
               </div>
-              <div className="text-center">
-                <div className="text-blue-400 font-bold text-lg">{stats.brightStars}</div>
-                <div className="text-gray-400">Brilhantes</div>
-              </div>
+              {!deviceInfo.isMobile && (
+                <div className="text-center">
+                  <div className="text-blue-400 font-bold text-lg">{stats.brightStars}</div>
+                  <div className="text-gray-400">Brilhantes</div>
+                </div>
+              )}
             </div>
             
             <div className="border-t border-gray-600 pt-2">
@@ -518,16 +615,20 @@ function EnhancedApp() {
                 />
               </div>
               
-              <div className="text-center mt-1 text-yellow-400 font-medium">
+              <div className={`text-center mt-1 text-yellow-400 font-medium ${
+                deviceInfo.isMobile ? 'text-xs' : ''
+              }`}>
                 {stats.progress.toFixed(1)}%
               </div>
             </div>
             
-            <div className="text-center text-gray-400 border-t border-gray-600 pt-2">
-              <div>🪐 {stats.visiblePlanets} planetas</div>
-              <div>🌌 {stats.visibleNebulae} nebulosas</div>
-              <div>🌙 {stats.moonPhase}</div>
-            </div>
+            {!deviceInfo.isMobile && (
+              <div className="text-center text-gray-400 border-t border-gray-600 pt-2">
+                <div>🪐 {stats.visiblePlanets} planetas</div>
+                <div>🌌 {stats.visibleNebulae} nebulosas</div>
+                <div>🌙 {stats.moonPhase}</div>
+              </div>
+            )}
           </div>
         </motion.div>
       )}
@@ -538,6 +639,8 @@ function EnhancedApp() {
             onStart={handleStartExploring}
             coupleNames={COUPLE_NAMES}
             specialDate={SPECIAL_DATE}
+            deviceInfo={deviceInfo}
+            optimizedSettings={optimizedSettings}
           />
         )}
       </AnimatePresence>
@@ -555,38 +658,61 @@ function EnhancedApp() {
               onStarClick={handleStarClick}
               discoveredMessages={discoveredMessages}
               specialDate={SPECIAL_DATE}
-              isMobile={isMobile}
+              isMobile={deviceInfo.isMobile}
+              isTablet={deviceInfo.isTablet}
               dayNightMode={dayNightMode}
               location={userLocation}
               skyData={skyData}
               specialMessages={hiddenMessages}
+              deviceInfo={deviceInfo}
+              optimizedSettings={optimizedSettings}
             />
             
+            {/* Botão surpresa final otimizado para mobile */}
             {canShowFinalSurprise && (
               <motion.button
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: deviceInfo.isMobile ? 1.05 : 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="fixed bottom-8 left-1/2 transform -translate-x-1/2 star-button z-40 px-8 py-4 text-lg"
+                className={`fixed bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 star-button z-40 ${
+                  deviceInfo.isMobile 
+                    ? 'px-6 py-3 text-base' 
+                    : 'px-8 py-4 text-lg'
+                }`}
                 onClick={handleShowFinalSurprise}
+                style={{ 
+                  fontSize: deviceInfo.isMobile ? '14px' : '18px',
+                  minHeight: deviceInfo.isMobile ? '44px' : 'auto' // Tamanho mínimo para toque
+                }}
               >
-                <Heart className="w-6 h-6 inline mr-2 animate-pulse" />
+                <Heart className={`inline mr-2 animate-pulse ${
+                  deviceInfo.isMobile ? 'w-5 h-5' : 'w-6 h-6'
+                }`} />
                 Surpresa Final Desbloqueada!
-                <Sparkles className="w-6 h-6 inline ml-2 animate-bounce" />
+                <Sparkles className={`inline ml-2 animate-bounce ${
+                  deviceInfo.isMobile ? 'w-5 h-5' : 'w-6 h-6'
+                }`} />
               </motion.button>
             )}
             
+            {/* Indicador de progresso para mobile */}
             {!canShowFinalSurprise && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="fixed bottom-8 left-1/2 transform -translate-x-1/2 glass-effect rounded-2xl p-3 z-40"
+                className={`fixed bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 glass-effect rounded-xl md:rounded-2xl p-2 md:p-3 z-40 ${
+                  deviceInfo.isMobile ? 'max-w-xs' : ''
+                }`}
               >
-                <div className="text-sm text-center">
-                  <Sparkles className="w-4 h-4 inline mr-2 text-pink-400" />
+                <div className={`text-center ${deviceInfo.isMobile ? 'text-xs' : 'text-sm'}`}>
+                  <Sparkles className={`inline mr-2 text-pink-400 ${
+                    deviceInfo.isMobile ? 'w-3 h-3' : 'w-4 h-4'
+                  }`} />
                   Encontre mais {5 - stats.discovered} estrelas especiais
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className={`text-gray-400 mt-1 ${
+                    deviceInfo.isMobile ? 'text-xs' : 'text-xs'
+                  }`}>
                     para desbloquear a surpresa final
                   </div>
                 </div>
@@ -604,17 +730,20 @@ function EnhancedApp() {
             specialDate={SPECIAL_DATE}
             discoveredCount={discoveredMessages.length}
             totalCount={totalSpecialStars}
+            deviceInfo={deviceInfo}
+            optimizedSettings={optimizedSettings}
           />
         )}
       </AnimatePresence>
 
+      {/* Modal de mensagem otimizado para mobile */}
       <AnimatePresence>
         {selectedMessage && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm p-4"
             onClick={handleCloseMessage}
           >
             <motion.div
@@ -622,25 +751,34 @@ function EnhancedApp() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.7, opacity: 0, y: 50 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="glass-effect rounded-3xl p-8 max-w-lg mx-4 relative"
+              className={`glass-effect rounded-3xl p-6 md:p-8 relative w-full ${
+                deviceInfo.isMobile ? 'max-w-sm' : 'max-w-lg'
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={handleCloseMessage}
-                className="absolute top-4 right-4 p-2 rounded-full glass-effect hover:bg-white hover:bg-opacity-20 transition-all duration-200"
+                className={`absolute top-3 md:top-4 right-3 md:right-4 p-2 rounded-full glass-effect hover:bg-white hover:bg-opacity-20 transition-all duration-200 ${
+                  deviceInfo.isMobile ? 'text-lg' : ''
+                }`}
+                style={{ minHeight: deviceInfo.isMobile ? '44px' : 'auto', minWidth: deviceInfo.isMobile ? '44px' : 'auto' }}
               >
                 ✕
               </button>
 
-              <div className="text-center mb-6">
-                <div className="text-6xl mb-3 animate-bounce">
+              <div className="text-center mb-4 md:mb-6">
+                <div className={`mb-3 animate-bounce ${
+                  deviceInfo.isMobile ? 'text-4xl' : 'text-6xl'
+                }`}>
                   {selectedMessage.emoji}
                 </div>
                 <div className="flex justify-center space-x-2">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-5 h-5 text-yellow-400 animate-pulse"
+                      className={`text-yellow-400 animate-pulse ${
+                        deviceInfo.isMobile ? 'w-4 h-4' : 'w-5 h-5'
+                      }`}
                       fill="currentColor"
                       style={{ animationDelay: `${i * 0.1}s` }}
                     />
@@ -648,48 +786,66 @@ function EnhancedApp() {
                 </div>
               </div>
 
-              <h3 className="text-2xl font-serif font-bold text-center text-gradient mb-6">
+              <h3 className={`font-serif font-bold text-center text-gradient mb-4 md:mb-6 ${
+                deviceInfo.isMobile ? 'text-lg' : 'text-2xl'
+              }`}>
                 {selectedMessage.title}
               </h3>
 
-              <div className="mb-6">
-                <p className="text-gray-200 leading-relaxed text-lg text-center">
+              <div className="mb-4 md:mb-6">
+                <p className={`text-gray-200 leading-relaxed text-center ${
+                  deviceInfo.isMobile ? 'text-sm' : 'text-lg'
+                }`}>
                   {selectedMessage.content}
                 </p>
               </div>
 
               {selectedMessage.astronomicalInfo && (
-                <div className="bg-blue-500 bg-opacity-20 rounded-xl p-4 mb-6 border border-blue-400">
+                <div className="bg-blue-500 bg-opacity-20 rounded-xl p-3 md:p-4 mb-4 md:mb-6 border border-blue-400">
                   <div className="flex items-center mb-2">
-                    <Search className="w-5 h-5 text-blue-400 mr-2" />
-                    <span className="text-blue-300 font-medium text-sm">
+                    <Search className={`text-blue-400 mr-2 ${
+                      deviceInfo.isMobile ? 'w-4 h-4' : 'w-5 h-5'
+                    }`} />
+                    <span className={`text-blue-300 font-medium ${
+                      deviceInfo.isMobile ? 'text-xs' : 'text-sm'
+                    }`}>
                       Curiosidade Astronômica
                     </span>
                   </div>
-                  <p className="text-blue-200 text-sm">
+                  <p className={`text-blue-200 ${
+                    deviceInfo.isMobile ? 'text-xs' : 'text-sm'
+                  }`}>
                     {selectedMessage.astronomicalInfo}
                   </p>
                 </div>
               )}
 
-              <div className="flex justify-center items-center space-x-3 mb-6">
-                <div className="w-12 h-0.5 bg-gradient-to-r from-transparent to-yellow-400"></div>
-                <Heart className="w-6 h-6 text-red-400 animate-pulse" />
-                <div className="w-12 h-0.5 bg-gradient-to-l from-transparent to-yellow-400"></div>
+              <div className="flex justify-center items-center space-x-3 mb-4 md:mb-6">
+                <div className="w-8 md:w-12 h-0.5 bg-gradient-to-r from-transparent to-yellow-400"></div>
+                <Heart className={`text-red-400 animate-pulse ${
+                  deviceInfo.isMobile ? 'w-5 h-5' : 'w-6 h-6'
+                }`} />
+                <div className="w-8 md:w-12 h-0.5 bg-gradient-to-l from-transparent to-yellow-400"></div>
               </div>
 
               <div className="text-center">
                 <button
                   onClick={handleCloseMessage}
-                  className="star-button px-8 py-3"
+                  className={`star-button ${
+                    deviceInfo.isMobile ? 'px-6 py-3 text-sm' : 'px-8 py-3'
+                  }`}
+                  style={{ minHeight: deviceInfo.isMobile ? '44px' : 'auto' }}
                 >
-                  <Sparkles className="w-5 h-5 inline mr-2" />
+                  <Sparkles className={`inline mr-2 ${
+                    deviceInfo.isMobile ? 'w-4 h-4' : 'w-5 h-5'
+                  }`} />
                   Continue Explorando
                 </button>
               </div>
 
+              {/* Partículas flutuantes reduzidas para mobile */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
-                {[...Array(15)].map((_, i) => (
+                {[...Array(deviceInfo.isMobile ? 8 : 15)].map((_, i) => (
                   <div
                     key={i}
                     className="absolute w-1 h-1 bg-yellow-400 rounded-full animate-float"
@@ -707,6 +863,15 @@ function EnhancedApp() {
         )}
       </AnimatePresence>
 
+      {/* Indicador de dispositivo para debug (apenas em desenvolvimento) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-2 left-2 glass-effect rounded-lg p-2 text-xs text-gray-400 z-50">
+          <div>📱 {deviceInfo.isMobile ? 'Mobile' : deviceInfo.isTablet ? 'Tablet' : 'Desktop'}</div>
+          <div>⚡ {deviceInfo.isLowPowerDevice ? 'Low Power' : 'High Power'}</div>
+          <div>🌟 Max: {optimizedSettings?.maxStars}</div>
+          <div>📐 {deviceInfo.viewportWidth}x{deviceInfo.viewportHeight}</div>
+        </div>
+      )}
     </div>
   )
 }

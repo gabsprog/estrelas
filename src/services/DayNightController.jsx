@@ -119,26 +119,7 @@ const DayNightController = ({ specialDate, onModeChange, currentMode, location }
           </button>
         </div>
 
-        {/* Informações astronômicas */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <div className="text-center p-2 bg-black bg-opacity-20 rounded-lg">
-            <Clock className="w-4 h-4 mx-auto mb-1 text-blue-300" />
-            <div className="text-xs text-gray-300">
-              {isRealTime ? 'Tempo Real' : 'Data Especial'}
-            </div>
-            <div className="text-sm font-semibold">
-              {formatTime(isRealTime ? currentTime : specialDate)}
-            </div>
-          </div>
-          
-          <div className="text-center p-2 bg-black bg-opacity-20 rounded-lg">
-            <Sun className="w-4 h-4 mx-auto mb-1 text-yellow-400" />
-            <div className="text-xs text-gray-300">Posição Solar</div>
-            <div className="text-sm font-semibold">
-              {getSunPhase()}
-            </div>
-          </div>
-        </div>
+
 
         {/* Controles expandidos */}
         <AnimatePresence>

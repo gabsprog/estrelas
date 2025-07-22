@@ -771,42 +771,6 @@ const RealisticStarMap = ({
           </AnimatePresence>
         </div>
 
-        {/* Instruções iniciais */}
-        {showInstructions && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 glass-effect rounded-3xl p-6 max-w-lg pointer-events-auto"
-          >
-            <div className="text-center">
-              <Compass className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-              <h3 className="text-2xl font-serif font-bold mb-4 text-gradient">
-                Céu Real de {location?.city || 'sua localização'}
-              </h3>
-              <p className="text-sm text-gray-300 mb-4">
-                Este é o céu real da noite de {formatDate(specialDate)}! 
-                Baseado em dados astronômicos precisos do catálogo Hipparcos.
-              </p>
-              <div className="space-y-2 text-xs text-gray-400 mb-6">
-                <p>✨ Estrelas rosa têm mensagens especiais</p>
-                <p>🌟 Mais de 1500 estrelas reais</p>
-                <p>🪐 Planetas em posições precisas</p>
-                <p>🌙 Lua com fase correta</p>
-                <p>🌌 Nebulosas do catálogo Messier</p>
-              </div>
-              <p className="text-xs text-gray-400 mb-6">
-                {isMobile ? 'Toque e arraste para explorar' : 'Clique e arraste para explorar'}
-              </p>
-              <button
-                onClick={() => setShowInstructions(false)}
-                className="star-button px-6 py-3"
-              >
-                Explorar o Universo
-              </button>
-            </div>
-          </motion.div>
-        )}
 
         {/* Estatísticas em tempo real */}
         <div className="absolute bottom-4 left-4 glass-effect rounded-xl p-3 pointer-events-auto">
